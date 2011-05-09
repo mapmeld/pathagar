@@ -27,7 +27,8 @@ a[href$=".epub"]   {
 .header {
     width:100%;
     height: 80px;
-    background: gray;
+    /* background: gray; */
+    background: darkgreen;
     margin-bottom: 20px;
 }
 

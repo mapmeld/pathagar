@@ -6,14 +6,28 @@
 {% block script %}
   {{ block.super }}
   $('#search').example('Book Search...');
+	var votecookies=document.cookie.split(";");
+	for (i=0;i<votecookies.length;i++){
+		var x=votecookies[i].substr(0,votecookies[i].indexOf("="));
+		x=x.replace(/^\s+|\s+$/g,"");
+		if(x=="voted"){
+			document.getElementById("votetxt").innerHTML="Te gustaba eso libro";
+			return;
+		}
+	}
 {% endblock %}
 
 {% block content %}
-
+<style type="text/css">
+#votelink:hover{color:purple;}
+#voteimg{border:2px solid white;}
+#voteimg:hover{border:2px solid purple;}
+#search{font-size:16pt;}
+</style>
 <div id="content">
 
 <h1 class="alt">{{ book.a_title }}</h1>
-<h2>by <span class="alt">{{ book.a_author }}</span></h2>
+<h2>de <span class="alt">{{ book.a_author }}</span></h2>
 <hr class="space">
 {% if user.is_authenticated %}
 <div class="span-3">
@@ -44,6 +58,9 @@
 <div class="span-2"><label>Downloads:</label></div>
 <div class="span-3">{{ book.downloads }}</div>
 <hr class="space">
+<div class="span-2"><label>Likes:</label></div>
+<div class="span-3">{{ book.likes }}</div>
+<hr class="space">
 <div class="span-2"><label>Publisher:</label></div>
 <div class="span-3">{{ book.dc_publisher }}</div>
 <hr class="space">
@@ -59,9 +76,43 @@
 </p>
 </div>
 <hr>
+<style type="text/css">
+#votelink:hover{color:purple;}
+#voteimg{border:2px solid white;}
+#voteimg:hover{border:2px solid purple;}
+</style>
+<script type="text/javascript">
+function vote(){
+	/* user clicked to vote up this book */
+	/* check if user has voted on this book before */
+	var votecookies=document.cookie.split(";");
+	for (i=0;i<votecookies.length;i++){
+		var x=votecookies[i].substr(0,votecookies[i].indexOf("="));
+		x=x.replace(/^\s+|\s+$/g,"");
+		if(x=="voted"){
+			return;
+		}
+	}
+	/* user is issuing a new vote */
+	document.getElementById("votetxt").innerHTML="Te gustaba eso libro";
+	exdays = 365;
+	var exdate=new Date();
+	exdate.setDate(exdate.getDate() + exdays);
+	var c_value=escape("plus") + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
+	document.cookie="voted=" + c_value;
+	var voteScript=document.createElement("script");
+	voteScript.src="{% url pathagar.books.views.like_book book.pk %}";
+	voteScript.type="text/javascript";
+	document.body.appendChild(voteScript);
+}
+</script>
+<a id="votelink" href="#" onclick="vote();">
+	<img id="voteimg" src="{{ MEDIA_URL }}/images/plusone.png" height="80px" style="display:inline;vertical-align:middle;">
+	<span id="votetxt" style="display:inline;vertical-align:middle;font-weight:bold;font-size:16pt;">Me gusta eso libro</span>
+</a>
 </div>
 
-<div class="span-6 last" id="sidebar">
+<div class="span-6 last" id="sidebar" style="margin-top:-100px;">
 {% if  book.cover_img %}
 <img src="{{ book.cover_img.url }}" alt="Cover" width=150px/>
 {% else %}

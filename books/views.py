@@ -96,6 +96,12 @@ def download_book(request, book_id):
     book.save()
     return sendfile(request, filename, attachment=True)
 
+def like_book(request, book_id):
+    book = get_object_or_404(Book, pk=book_id)
+    filename = os.path.join(settings.MEDIA_ROOT, book.book_file.name)
+    book.likes += 1
+    book.save()
+
 def tags(request):
     return render_to_response(
         'books/tag_list.html',
@@ -188,3 +194,6 @@ def most_downloaded(request, qtype=None):
     queryset = Book.objects.all().order_by('-downloads')
     return _book_list(request, queryset, qtype, list_by='most-downloaded')
 
+def most_liked(request, qtype=None):
+    queryset = Book.objects.all().order_by('-likes')
+    return _book_list(request, queryset, qtype, list_by='most-liked')

@@ -57,6 +57,7 @@ class Book(models.Model):
     time_added = models.DateTimeField(auto_now_add=True)
     tags = TagField()
     downloads = models.IntegerField(default=0)
+	likes = models.IntegerField(default=0)
     a_id = UUIDField('atom:id')
     a_title = models.CharField('atom:title', max_length=200)
     a_author = models.CharField('atom:author', max_length=200)
